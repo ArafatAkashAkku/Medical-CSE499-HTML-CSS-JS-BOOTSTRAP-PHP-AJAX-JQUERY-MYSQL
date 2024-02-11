@@ -1,0 +1,84 @@
+/* css reset start  */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+    text-transform: none;
+    user-select: none;
+}
+
+/* css reset start  */
+
+/* html body start  */
+
+html{
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* html body end */
+
+.top-header{
+    background-image: url(../../images/Header\ Background.jpg)!important;
+    background-position: center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+}
+
+.serve-bg{
+    background-color: white!important;
+}
+
+.error-img{
+    background-image: url(../../images/loader-gif.gif)!important;
+    background-position: center!important;
+    background-repeat: no-repeat!important;
+    background-size: auto!important;
+}
+
+.btn-width {
+    width: 100% !important;
+}
+
+/* custom scrollbar section start */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background-clip: content-box;
+    background-color: #ffc107;
+    border-radius: 4px;
+    border: 1px solid #ffc107;
+}
+
+/* custom scrollbar section end */
+
+/* 404.php page start */
+
+.error-pages {
+    height: 100vh !important;
+    width: 100% !important;
+}
+
+.fa-face-sad-tear {
+    font-size: 300px !important;
+}
+
+/* 404.php page end */
+
+.min-height-css{
+    min-height: 50vh!important;
+}
+
+.data-table-width{
+    width: 100%!important;
+}
