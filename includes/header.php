@@ -8,7 +8,7 @@
 <header>
     <nav class="navbar navbar-expand-lg bg-dark top-0 start-0 navigation-header">
         <div class="container-fluid">
-            <a class="navbar-brand text-warning" href="index">MHC</a>
+            <a class="navbar-brand text-warning" href="./">MHC</a>
             <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -18,9 +18,7 @@
                     if (isset($_SESSION['patient_logged_in']) && $_SESSION['patient_logged_in'] == true) {
                     ?>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="patient_dashboard?email=<?php
-                                                                                                echo $_SESSION['patient_email'];
-                                                                                                ?>&id=<?php echo $_SESSION['patient_id']; ?>" aria-current="page">Patient Dashboard</a>
+                            <a class="nav-link active text-light" href="patient_dashboard" aria-current="page">Patient Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active text-light" href="doctor_appointment" aria-current="page">Doctor Appointment</a>
@@ -38,23 +36,20 @@
                             <a class="nav-link active text-light" href="login" aria-current="page">Patient Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="doctor/index" aria-current="page">Doctor Login</a>
+                            <a class="nav-link active text-light" href="doctor/" aria-current="page">Doctor Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="admin/index" aria-current="page">Admin Login</a>
+                            <a class="nav-link active text-light" href="admin/" aria-current="page">Admin Login</a>
                         </li>
                     <?php
                     }
                     ?>
                 </ul>
-                <form class="d-flex flex-column search-page" role="search" action="search_result" method="GET" autocomplete="off">
+                <form class="d-flex flex-column search-page" role="search" autocomplete="off">
                     <div class="d-flex">
-                        <input type="text" id="search" name="search" required value="<?php if (isset($_GET['search'])) {
-                                                                                            echo $_GET['search'];
-                                                                                        } ?>" class="form-control" placeholder="Search data">
+                        <input type="text" name="search" required class="form-control" placeholder="Search data">
                         <button class="btn btn-outline-warning text-light" type="submit">Search</button>
                     </div>
-                    <div class="bg-light" id="display"></div>
                 </form>
             </div>
         </div>

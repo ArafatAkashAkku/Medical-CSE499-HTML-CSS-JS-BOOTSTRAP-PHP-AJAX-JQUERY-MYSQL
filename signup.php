@@ -1,73 +1,44 @@
 <?php
-require_once 'includes/config.php';
-include 'includes/dbConnect.php';
+require_once 'config/config.php';
+include 'config/dbConnect.php';
 session_start();
-
-if (isset($_POST['submit'])) {
-    $email = mysqli_real_escape_string($con,$_POST['email']);
-    $password = mysqli_real_escape_string($con,$_POST['password']);
-    $fullname = mysqli_real_escape_string($con,$_POST['fullname']);
-    $user_exist_query = "SELECT * from `patient` WHERE `email`='$email'";
-    $result = mysqli_query($con, $user_exist_query);
-    if (mysqli_num_rows($result) > 0) {
-        echo "
-        <script>
-        alert('Email already taken');
-        window.location.href='signup';
-        </script>
-        ";
-    } else {
-        $query = "INSERT INTO `patient`(`email`, `password`,`fullname`,`verified`) VALUES ('$email', '$password','$fullname','1')";
-        $save = mysqli_query($con, $query);
-        if ($save) {
-            echo "
-            <script>
-            alert('Email registered');
-            window.location.href='login';
-            </script>
-            ";
-        } else {
-            echo "
-            <script>
-            alert('Server Down');
-            window.location.href='signup';
-            </script>
-            ";
-        }
-    }
+if (isset($_SESSION['patient_logged_in']) && $_SESSION['patient_logged_in'] == true) {
+    header("Location: ./");
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- bootstrap css link  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- external css link  -->
-    <link rel="stylesheet" href="external/css/style.css">
-    <!-- font awesome cdn 6.3.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
-    <!-- favicon link  -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <!-- meta tag      -->
+    <?php include("includes/meta.php") ?>
+    <!-- link tag  -->
+    <?php include("includes/link.php") ?>
     <!-- website title  -->
-    <title>Medical Health Care</title>
+    <?php include 'includes/websiteinfo.php'; ?>
+    <title>Sign Up | <?php if ($website_name == "") {
+                            echo "Website Title";
+                        } else {
+                            echo $website_name;
+                        } ?></title>
 </head>
+<!-- search bar display none  -->
+<style>
+    .search-page {
+        display: none !important;
+    }
+</style>
 
 <body>
-
     <!-- header start  -->
     <?php include("includes/header.php") ?>
     <!-- header end -->
-
     <!-- main start  -->
-    <main>
-        <div class="d-flex flex-column align-items-center justify-content-center p-5" style="background-color: #FF7F50;">
+    <main style="background-color: #FF7F50;">
+        <div class="d-flex flex-column align-items-center justify-content-center p-5">
             <div class="bg-light p-3 res-width">
                 <h2 class="text-muted text-center pt-2">Enter patient signup details</h2>
-                <form class="p-3" action="" method="POST" autocomplete="off">
+                <form class="p-3" id="sign-up-form" autocomplete="off">
                     <div class="form-group py-2">
                         <div class="input-field">
                             <input type="text" name="fullname" placeholder="Enter your full name" required class="form-control px-3 py-2">
@@ -90,28 +61,100 @@ if (isset($_POST['submit'])) {
                             </div>
                         </label>
                     </div>
-                    <button class="btn btn-width btn-outline-warning bg-warning text-dark" name="submit" type="submit">Sign Up</button>
-                    <div class="text-center mt-3 text-muted">Already a member? <a href="login.php">Sign In</a></div>
+                    <button class="btn btn-width btn-outline-warning bg-warning text-dark" id="sign-up-btn" name="submit" type="submit">Sign Up</button>
+                    <div class="text-center mt-3 text-muted">Already a member? <a href="login">Sign In</a></div>
                     <div class="text-center mt-3 text-muted">
-                        <a href="forgetpassword.php">Forgot Password?</a>
+                        <a href="forgetpassword">Forgot Password?</a>
                     </div>
                 </form>
             </div>
         </div>
-
-
     </main>
     <!-- main end  -->
-
     <!-- footer start  -->
     <?php include("includes/footer.php") ?>
     <!-- footer end  -->
-
-    <!-- bootstrap js link  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- external js link  -->
-    <script src="external/js/script.js"></script>
+    <!-- script tag  -->
+    <?php include("includes/script.php") ?>
     <!-- internal script link  -->
+    <script>
+        // jquery ready start 
+        $(document).ready(function() {
+            // sign up form 
+            $("#sign-up-form").on("submit", function(e) {
+                e.preventDefault();
+                let signupData = $("#sign-up-form").serialize();
+                $.ajax({
+                    url: "signupupdate.php",
+                    type: "POST",
+                    data: signupData,
+                    beforeSend: function() {
+                        $("#sign-up-btn").prop("disabled", true);
+                        $("#sign-up-btn").text("Please wait...");
+                    },
+                    complete: function() {
+                        $("#sign-up-btn").prop("disabled", false);
+                        $("#sign-up-btn").text("Sign up");
+                    },
+                    success: function(data) {
+                        if (data == 1) {
+                            Swal.fire({
+                                title: "Empty Field",
+                                text: "Email, Password or name should not be empty",
+                                icon: "error"
+                            });
+                        } else if (data == 5) {
+                            Swal.fire({
+                                title: "Query Problem",
+                                text: "Can not run query",
+                                icon: "error"
+                            });
+                        } else if (data == 2) {
+                            $("#sign-up-form").trigger("reset");
+                            Swal.fire({
+                                title: "Email already taken",
+                                text: "Signup with different email",
+                                icon: "question"
+                            });
+                        } else if (data == 4) {
+                            Swal.fire({
+                                title: "Server Down",
+                                text: "Please try again later",
+                                icon: "error"
+                            });
+                            nnnnnn
+                        } else if (data == 6) {
+                            Swal.fire({
+                                title: "Name should be greater than 5 character",
+                                text: "Provide your full name",
+                                icon: "error"
+                            });
+                        } else if (data == 7) {
+                            Swal.fire({
+                                title: "Password should be greater than 8 character",
+                                text: "Signup with strong password and no extra spaces",
+                                icon: "error"
+                            });
+                        } else if (data == 8) {
+                            Swal.fire({
+                                title: "Provide valid email",
+                                text: "Signup with your valid email address",
+                                icon: "error"
+                            });
+                        } else if (data == 3) {
+                            $("#sign-up-form").trigger("reset");
+                            Swal.fire({
+                                icon: "success",
+                                title: "Registration successful. Please check your email",
+                                showConfirmButton: false,
+                                timer: 10000
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
     <script>
         function myFunction() {
             let x = document.getElementById("myInput");

@@ -1,26 +1,24 @@
 <?php
-require_once '../includes/config.php';
-include '../includes/dbConnect.php';
+require_once '../config/config.php';
+include '../config/dbConnect.php';
 session_start();
 if (isset($_GET['id'])) {
-        $id = $_GET['id'];
-        $sql = "UPDATE `doctor` SET `verified`='1' where id=$id";
-        $result = mysqli_query($con, $sql);
-        if($result){
+    $id = $_GET['id'];
+    $sql = "UPDATE `doctor_info` SET `verified`='1' WHERE `id`='$id'";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
         echo "
         <script>
         alert('Data updated');
-        window.location.href='admin_dashboard?email=$_SESSION[admin_email]&id=$_SESSION[admin_id]';
+        window.location.href='doctor_info';
         </script>
         ";
-        }else{
-            echo "
+    } else {
+        echo "
             <script>
             alert('Data not updated');
-            window.location.href='admin_dashboard?email=$_SESSION[admin_email]&id=$_SESSION[admin_id]';
+            window.location.href='doctor_info';
             </script>
             ";
-        }
-
+    }
 }
-?>
