@@ -1,9 +1,12 @@
 <?php
-require_once '../includes/config.php';
-include '../includes/dbConnect.php';
+require_once '../config/config.php';
+include '../config/dbConnect.php';
 session_start();
+if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
+    header("Location: doctor_dashboard");
+} 
 if (isset($_POST['submit'])) {
-    $query = " SELECT * FROM `doctor` WHERE `email`='$_POST[email]'";
+    $query = " SELECT * FROM `doctor_info` WHERE `email`='$_POST[email]'";
     $result = mysqli_query($con, $query);
     if ($result) {
         if (mysqli_num_rows($result) == 1) {
@@ -13,15 +16,13 @@ if (isset($_POST['submit'])) {
                     $_SESSION['doctor_logged_in'] = true;
                     $_SESSION['doctor_email'] = $result_fetch['email'];
                     $_SESSION['doctor_id'] = $result_fetch['id'];
-                    $_SESSION['doctor_fullname'] = $result_fetch['fullname'];
-                    $_SESSION['doctor_phone'] = $result_fetch['phone'];
                     setcookie("doctoremail", $result_fetch['email'], time() + (86400 * 30), "/");
-                    header("location:doctor_dashboard?email=$_SESSION[doctor_email]&id=$_SESSION[doctor_id]");
+                    header("location:doctor_dashboard");
                 } else {
                     echo "
                     <script>
                     alert('Password not matched');
-                    window.location.href='index';
+                    window.location.href='./';
                     </script>
                     ";
                 }
@@ -29,7 +30,7 @@ if (isset($_POST['submit'])) {
                 echo "
                 <script>
                 alert('Email not verified');
-                window.location.href='index';
+                window.location.href='./';
                 </script>
                 ";
             }
@@ -45,7 +46,7 @@ if (isset($_POST['submit'])) {
         echo "
         <script>
         alert('Can not run query');
-        window.location.href='index';
+        window.location.href='./';
         </script>
         ";
     }
@@ -56,19 +57,17 @@ if (isset($_POST['submit'])) {
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- bootstrap css link  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- external css link  -->
-    <link rel="stylesheet" href="external/css/style.css">
-    <!-- font awesome cdn 6.3.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
-    <!-- favicon link  -->
-    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+ <!-- meta tag      -->
+ <?php include("includes/meta.php") ?>
+    <!-- link tag  -->
+    <?php include("includes/link.php") ?>
     <!-- website title  -->
-    <title>Medical Health Care</title>
+    <?php include 'includes/websiteinfo.php'; ?>
+    <title>Doctor Log In | <?php if ($website_name == "") {
+                            echo "Website Title";
+                        } else {
+                            echo $website_name;
+                        } ?></title>
 </head>
 
 <body>
@@ -118,10 +117,8 @@ if (isset($_POST['submit'])) {
     <?php include("includes/footer.php") ?>
     <!-- footer end  -->
 
-    <!-- bootstrap js link  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- external js link  -->
-    <script src="external/js/script.js"></script>
+    <!-- script tag  -->
+    <?php include("includes/script.php") ?>
     <!-- internal script link  -->
     <script>
         function myFunction() {

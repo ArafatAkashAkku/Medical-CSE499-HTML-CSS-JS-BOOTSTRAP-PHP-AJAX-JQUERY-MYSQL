@@ -1,32 +1,26 @@
 <?php
-require_once '../includes/config.php';
-include '../includes/dbConnect.php';
+require_once '../config/config.php';
+include '../config/dbConnect.php';
 session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="10; url=doctor_dashboard?email=<?php
-                                                                        echo $_SESSION['doctor_email'];
-                                                                        ?>&id=<?php echo $_SESSION['doctor_id']; ?>">
-    <!-- bootstrap css link  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- external css link  -->
-    <link rel="stylesheet" href="external/css/style.css">
-    <!-- font awesome cdn 6.3.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
-    <!-- favicon link  -->
-    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+    <!-- meta tag      -->
+    <?php include("includes/meta.php") ?>
+    <!-- link tag  -->
+    <?php include("includes/link.php") ?>
     <!-- website title  -->
-    <title>404 Page Not Found</title>
+    <?php include 'includes/websiteinfo.php'; ?>
+    <title>404 Error | <?php if ($website_name == "") {
+                            echo "Website Title";
+                        } else {
+                            echo $website_name;
+                        } ?></title>
 </head>
 
 <body>
-
     <!-- main start  -->
     <main>
         <div class="d-flex flex-column gap-4 align-items-center justify-content-center text-center error-pages">
@@ -35,19 +29,13 @@ session_start();
             <h3>Page Not Found</h3>
             <p>The page you are looking for doesn't exist. <br> So go back and choose a new direction.</p>
             <div class="d-inline">
-                <a href="doctor_dashboard?email=<?php
-                                                echo $_SESSION['doctor_email'];
-                                                ?>&id=<?php echo $_SESSION['doctor_id']; ?>" class="py-2 px-4 bg-warning border rounded-4 text-decoration-none text-dark">Go to home</a>
+                <a href="./" class="py-2 px-4 bg-warning border rounded-4 text-decoration-none text-dark">Go to home</a>
             </div>
         </div>
     </main>
     <!-- main end  -->
-
-
-    <!-- bootstrap js link  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- external js link  -->
-    <script type="text/javascript" src="external/js/script.js"></script>
+    <!-- script tag  -->
+    <?php include("includes/script.php") ?>
 </body>
 
 </html>

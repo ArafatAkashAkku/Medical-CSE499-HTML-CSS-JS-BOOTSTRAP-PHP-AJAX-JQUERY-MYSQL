@@ -1,14 +1,16 @@
 <?php
-require_once '../includes/config.php';
-include '../includes/dbConnect.php';
+require_once '../config/config.php';
+include '../config/dbConnect.php';
 session_start();
-
+if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
+    header("Location: doctor_dashboard");
+} 
 if (isset($_POST['submit'])) {
     $email = mysqli_real_escape_string($con,$_POST['email']);
     $password = mysqli_real_escape_string($con,$_POST['password']);
     $fullname = mysqli_real_escape_string($con,$_POST['fullname']);
 
-    $user_exist_query = "SELECT * from `doctor` WHERE `email`='$email'";
+    $user_exist_query = "SELECT * from `doctor_info` WHERE `email`='$email'";
     $result = mysqli_query($con, $user_exist_query);
     if (mysqli_num_rows($result) > 0) {
         echo "
@@ -19,7 +21,7 @@ if (isset($_POST['submit'])) {
         ";
     }
     else{
-        $query = "INSERT INTO `doctor`(`email`, `password`,`fullname`,`verified`) VALUES ('$email', '$password','$fullname','0')";
+        $query = "INSERT INTO `doctor_info`(`email`, `password`,`fullname`,`verified`) VALUES ('$email', '$password','$fullname','0')";
         $save =mysqli_query($con,$query);
         if($save){
             echo "
@@ -45,19 +47,17 @@ if (isset($_POST['submit'])) {
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- bootstrap css link  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- external css link  -->
-    <link rel="stylesheet" href="external/css/style.css">
-    <!-- font awesome cdn 6.3.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
-    <!-- favicon link  -->
-    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+ <!-- meta tag      -->
+ <?php include("includes/meta.php") ?>
+    <!-- link tag  -->
+    <?php include("includes/link.php") ?>
     <!-- website title  -->
-    <title>Medical Health Care</title>
+    <?php include 'includes/websiteinfo.php'; ?>
+    <title>Doctor Sign Up | <?php if ($website_name == "") {
+                            echo "Website Title";
+                        } else {
+                            echo $website_name;
+                        } ?></title>
 </head>
 
 <body>
@@ -111,10 +111,8 @@ if (isset($_POST['submit'])) {
     <?php include("includes/footer.php") ?>
     <!-- footer end  -->
 
-    <!-- bootstrap js link  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- external js link  -->
-    <script src="external/js/script.js"></script>
+    <!-- script tag  -->
+    <?php include("includes/script.php") ?>
     <!-- internal script link  -->
     <script>
         function myFunction() {

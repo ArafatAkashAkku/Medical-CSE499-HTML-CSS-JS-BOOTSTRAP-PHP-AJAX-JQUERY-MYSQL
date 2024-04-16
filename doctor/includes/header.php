@@ -11,13 +11,11 @@
             <?php
             if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
             ?>
-                <a class="navbar-brand text-warning" href="doctor_dashboard?email=<?php
-                                                                                        echo $_SESSION['doctor_email'];
-                                                                                        ?>&id=<?php echo $_SESSION['doctor_id']; ?>">MHC</a>
+                <a class="navbar-brand text-warning" href="doctor_dashboard">MHC</a>
             <?php
             } else {
             ?>
-                <a class="navbar-brand text-warning" href="../index">MHC</a>
+                <a class="navbar-brand text-warning" href="../">MHC</a>
             <?php
             }
             ?>
@@ -30,9 +28,7 @@
                     if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
                     ?>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="doctor_dashboard?email=<?php
-                                                                                                    echo $_SESSION['doctor_email'];
-                                                                                                    ?>&id=<?php echo $_SESSION['doctor_id']; ?>" aria-current="page">Doctor Dashboard</a>
+                            <a class="nav-link active text-light" href="doctor_dashboard" aria-current="page">Doctor Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active text-light" href="patient_info" aria-current="page">Patient Info</a>
@@ -50,10 +46,10 @@
                             <a class="nav-link active text-light" href="../login" aria-current="page">Patient Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="index" aria-current="page">Doctor Login</a>
+                            <a class="nav-link active text-light" href="./" aria-current="page">Doctor Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-light" href="../admin/index" aria-current="page">Admin Login</a>
+                            <a class="nav-link active text-light" href="../admin/" aria-current="page">Admin Login</a>
                         </li>
                     <?php
                     }

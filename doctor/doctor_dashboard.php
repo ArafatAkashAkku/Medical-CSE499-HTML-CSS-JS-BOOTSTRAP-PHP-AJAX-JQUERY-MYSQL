@@ -1,40 +1,32 @@
 <?php
-require_once '../includes/config.php';
-include '../includes/dbConnect.php';
+require_once '../config/config.php';
+include '../config/dbConnect.php';
 session_start();
-
-$email = "";
-$id = "";
-if (isset($_GET["email"]) & isset($_GET["id"])) {
-    $email = $_GET["email"];
-    $id = $_GET["id"];
+if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
+    $email = $_SESSION['doctor_email'];
+    $id = $_SESSION['doctor_id'];
+} else {
+    header("Location: ./");
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- bootstrap css link  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- external css link  -->
-    <link rel="stylesheet" href="external/css/style.css">
-    <!-- swipper css link -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-    <!-- font awesome cdn 6.3.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
-    <!-- favicon link  -->
-    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+ <!-- meta tag      -->
+ <?php include("includes/meta.php") ?>
+    <!-- link tag  -->
+    <?php include("includes/link.php") ?>
     <!-- website title  -->
-    <title>Medical Health Care</title>
+    <?php include 'includes/websiteinfo.php'; ?>
+    <title>Doctor Dashboard | <?php if ($website_name == "") {
+                            echo "Website Title";
+                        } else {
+                            echo $website_name;
+                        } ?></title>
 </head>
 
 <body class="overflow-x-hidden">
-    <?php
-    if (isset($_SESSION['doctor_logged_in']) && $_SESSION['doctor_logged_in'] == true) {
-    ?>
         <!-- header start  -->
         <?php include("includes/header.php") ?>
         <!-- header end -->
@@ -43,7 +35,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
         <main class="px-3">
             <div class="text-end mt-4">
                 <?php
-                $ret = mysqli_query($con, "select * from doctor where email='$email' and id='$id'");
+                $ret = mysqli_query($con, "SELECT * from `doctor_info` WHERE `email`='$email' and `id`='$id'");
                 while ($row = mysqli_fetch_array($ret)) {
                     if ($row["active"] == 1) {
                         echo "<a onclick='return update()' href='doctor_offline?id=$id' class='text-decoration-none bg-danger text-light px-3 py-1 border border-warning rounded'>Want to go Offline???</a>";
@@ -55,13 +47,12 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
             </div>
             <h1 class="text-center">Doctor Profile</h1>
             <?php
-            $ret = mysqli_query($con, "select * from doctor where email='$email' and id='$id'");
+            $ret = mysqli_query($con, "SELECT * from `doctor_info` WHERE `email`='$email' AND `id`='$id'");
             $row = mysqli_fetch_array($ret);
             if ($row) {
             ?>
                 <form action="" method="POST" autocomplete="off" enctype="multipart/form-data">
                     <div class="row gap-2 d-flex justify-content-center">
-
                         <div class="col-12 text-center d-flex align-items-center justify-content-center">
                             <div class="form-group py-2">
                                 <div class="input-field">
@@ -314,16 +305,6 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
         <!-- footer start  -->
         <?php include("includes/footer.php") ?>
         <!-- footer end  -->
-    <?php
-    } else {
-        echo "
-        <script>
-        alert('You need to log in first');
-        window.location.href='index';
-        </script>
-        ";
-    }
-    ?>
 
     <?php
     if (isset($_POST['submit'])) {
@@ -339,7 +320,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
         $religion = mysqli_real_escape_string($con, $_POST['religion']);
         $speciality = mysqli_real_escape_string($con, $_POST['speciality']);
 
-        $user_exist_query = "SELECT * from `doctor` WHERE `email`='$email' and `id`='$id'";
+        $user_exist_query = "SELECT * from `doctor_info` WHERE `email`='$email' and `id`='$id'";
         $result = mysqli_query($con, $user_exist_query);
 
         if ($result) {
@@ -366,7 +347,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                                     mkdir("../dataimage/doctor/" . $id);
                                 }
                                 move_uploaded_file($fileTmpName, $fileDestination);
-                                $query = "UPDATE `doctor` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion',`image`='$fileNameNew', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
+                                $query = "UPDATE `doctor_info` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion',`image`='$fileNameNew', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
                                 if (mysqli_query($con, $query)) {
                                     echo "
                                     <script>
@@ -378,7 +359,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                                     echo "
                                     <script>
                                     alert('Server Down');
-                                    window.location.href='doctor_dashboard?email=$_SESSION[doctor_email]&id=$_SESSION[doctor_id]';
+                                    window.location.href='doctor_dashboard';
                                     </script>
                                     ";
                                 }
@@ -420,7 +401,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                                 $fileNameNew = uniqid('', true) . "." . $fileActualExtension;
                                 $fileDestination = "../dataimage/doctor/$id/" . $fileNameNew;
                                 move_uploaded_file($fileTmpName, $fileDestination);
-                                $query = "UPDATE `doctor` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion',`image`='$fileNameNew', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
+                                $query = "UPDATE `doctor_info` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion',`image`='$fileNameNew', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
                                 if (mysqli_query($con, $query)) {
                                     echo "
                                     <script>
@@ -432,7 +413,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                                     echo "
                                     <script>
                                     alert('Server Down');
-                                    window.location.href='doctor_dashboard?email=$_SESSION[doctor_email]&id=$_SESSION[doctor_id]';
+                                    window.location.href='doctor_dashboard';
                                     </script>
                                     ";
                                 }
@@ -458,7 +439,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                         ";
                     }
                 } else {
-                    $query = "UPDATE `doctor` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
+                    $query = "UPDATE `doctor_info` SET `fullname`='$fullname',`phone`='$phone',`gender`='$gender',`dob`='$dob',`blood`='$blood',`nationality`='$nationality',`maritalstatus`='$maritalstatus',`address`='$address',`occupation`='$occupation',`religion`='$religion', `speciality`='$speciality' WHERE `email`='$email' and `id`='$id'";
                     if (mysqli_query($con, $query)) {
                         echo "
                         <script>
@@ -470,7 +451,7 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
                         echo "
                         <script>
                         alert('Server Down');
-                        window.location.href='doctor_dashboard?email=$_SESSION[doctor_email]&id=$_SESSION[doctor_id]';
+                        window.location.href='doctor_dashboard';
                         </script>
                         ";
                     }
@@ -480,17 +461,15 @@ if (isset($_GET["email"]) & isset($_GET["id"])) {
             echo "
             <script>
             alert('Can not run query');
-            window.location.href='doctor_dashboard?email=$_SESSION[doctor_email]&id=$_SESSION[doctor_id]';
+            window.location.href='doctor_dashboard';
             </script>
             ";
         }
     }
     ?>
 
-    <!-- bootstrap js link  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- external js link  -->
-    <script src="external/js/script.js"></script>
+    <!-- script tag  -->
+    <?php include("includes/script.php") ?>
     <!-- internal script link  -->
     <script>
         function update() {
